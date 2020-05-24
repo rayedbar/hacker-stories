@@ -21,38 +21,33 @@ const App = () => {
     },
   ];
 
-  const searchChangeCallback = event =>
-    console.log(event.target.value)
+  const [searchTerm, setSearchTerm] = React.useState('React')
+
+  const searchChangeHandler = event =>
+    setSearchTerm(event.target.value)
+
+  const filteredStories = stories.filter(story =>
+      story.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+    );
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search searchChangeCallback={searchChangeCallback}/>
+      <Search searchTerm={searchTerm} searchChangeHandler={searchChangeHandler} />
       <hr />
-      <List list={stories} />
+      <List stories={filteredStories} />
     </div>
   );
 }
 
-const Search = props => {
-  const [searchTerm, setSearchTerm] = React.useState('')
-
-  const searchChangeHandler = event => {
-    setSearchTerm(event.target.value)
-    props.searchChangeCallback(event)
-  }
-
-  return (
-    <div>
-      <label htmlFor='search'>Search: </label>
-      <input id='search' type='text' onChange={searchChangeHandler} />
-      <p>Searching for <strong>{searchTerm}</strong></p>
-    </div>
-  );
-}
+const Search = props =>
+  <div>
+    <label htmlFor='search'>Search: </label>
+    <input id='search' type='text' value={props.searchTerm} onChange={props.searchChangeHandler} />
+  </div>
 
 const List = props =>
-  props.list.map(item =>
+  props.stories.map(item =>
     <div key={item.objectID}>
       <span>
         <a href={item.url}>{item.title}</a>
