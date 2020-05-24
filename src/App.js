@@ -21,14 +21,14 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = React.useState('React')
+  const [searchTerm, setSearchTerm] = React.useState('React');
 
   const searchChangeHandler = event =>
     setSearchTerm(event.target.value)
 
   const filteredStories = stories.filter(story =>
-      story.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-    );
+    story.title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+  );
 
   return (
     <div>
@@ -40,22 +40,23 @@ const App = () => {
   );
 }
 
-const Search = props =>
+const Search = ({ searchTerm, searchChangeHandler }) =>
   <div>
     <label htmlFor='search'>Search:&nbsp;</label>
-    <input id='search' type='text' value={props.searchTerm} onChange={props.searchChangeHandler} />
+    <input id='search' type='text' value={searchTerm} onChange={searchChangeHandler} />
   </div>
 
-const List = props =>
-  props.stories.map(item =>
-    <div key={item.objectID}>
-      <span>
-        <a href={item.url}>{item.title}</a>
-      </span>&nbsp;
-      <span>{item.author}</span>&nbsp;
-      <span>{item.num_comments}</span>&nbsp;
-      <span>{item.points}</span>
-    </div>
-  );
+const List = ({ stories }) =>
+  stories.map(({ objectID, ...item }) => <Item key={objectID} {...item} />)
+
+const Item = ({ title, url, author, num_comments, points }) =>
+  <div>
+    <span>
+      <a href={url}>{title}</a>
+    </span>&nbsp;
+    <span>{author}</span>&nbsp;
+    <span>{num_comments}</span>&nbsp;
+    <span>{points}</span>
+  </div>
 
 export default App;
