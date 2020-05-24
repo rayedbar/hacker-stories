@@ -42,7 +42,7 @@ const App = () => {
 
 const Search = props =>
   <div>
-    <label htmlFor='search'>Search: </label>
+    <label htmlFor='search'>Search:&nbsp;</label>
     <input id='search' type='text' value={props.searchTerm} onChange={props.searchChangeHandler} />
   </div>
 
@@ -51,9 +51,9 @@ const List = props =>
     <div key={item.objectID}>
       <span>
         <a href={item.url}>{item.title}</a>
-      </span>
-      <span>{item.author}</span>
-      <span>{item.num_comments}</span>
+      </span>&nbsp;
+      <span>{item.author}</span>&nbsp;
+      <span>{item.num_comments}</span>&nbsp;
       <span>{item.points}</span>
     </div>
   );
