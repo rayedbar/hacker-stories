@@ -33,7 +33,9 @@ const App = () => {
   return (
     <>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel id='search' label='Search' value={searchTerm} onInputChange={handleSearch} />
+      <InputWithLabel id='search' value={searchTerm} onInputChange={handleSearch}>
+        <strong>Search:</strong>
+      </InputWithLabel>
       <hr />
       <List stories={searchedStories} />
     </>
@@ -52,9 +54,10 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue]
 }
 
-const InputWithLabel = ({ id, label, value, type = 'text', onInputChange }) =>
+const InputWithLabel = ({ id, value, type = 'text', onInputChange, children }) =>
   <>
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id}>{children}</label>
+    &nbsp;
     <input id={id} type={type} value={value} onChange={onInputChange} />
   </>
 
