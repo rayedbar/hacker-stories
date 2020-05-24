@@ -43,32 +43,34 @@ const App = () => {
   );
 
   return (
-    <div>
+    <>
       <h1>My Hacker Stories</h1>
       <Search searchTerm={searchTerm} searchChangeHandler={searchChangeHandler} />
       <hr />
       <List stories={filteredStories} />
-    </div>
+    </>
   );
 }
 
 const Search = ({ searchTerm, searchChangeHandler }) =>
-  <div>
+  <>
     <label htmlFor='search'>Search:&nbsp;</label>
     <input id='search' type='text' value={searchTerm} onChange={searchChangeHandler} />
-  </div>
+  </>
 
 const List = ({ stories }) =>
-  stories.map(({ objectID, ...item }) => <Item key={objectID} {...item} />)
+  <ul>
+    {stories.map(({ objectID, ...item }) => <Item key={objectID} {...item} />)}
+  </ul>
 
 const Item = ({ title, url, author, num_comments, points }) =>
-  <div>
+  <li>
     <span>
       <a href={url}>{title}</a>
     </span>&nbsp;
     <span>{author}</span>&nbsp;
     <span>{num_comments}</span>&nbsp;
     <span>{points}</span>
-  </div>
+  </li>
 
 export default App;
