@@ -54,14 +54,18 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-  React.useEffect(() => {
+  const handleFetchStories = React.useCallback(() => {
     if (!searchTerm) return;
     dispatchStories({ type: 'FETCH_INIT' });
     fetch(`${API_ENDPOINT}${searchTerm}`)
       .then(response => response.json())
       .then(response => dispatchStories({ type: 'FETCH_SUCCESS', payload: response.hits }))
       .catch(() => dispatchStories({ type: 'FETCH_FAILURE' }));
-  }, [searchTerm]);
+  }, [searchTerm])
+
+  React.useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   const handleSearch = event => setSearchTerm(event.target.value);
   const handleRemoveStory = item => dispatchStories({ type: 'REMOVE_STORY', payload: item })
