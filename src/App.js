@@ -70,18 +70,14 @@ const App = () => {
     handleFetchStories();
   }, [handleFetchStories]);
 
-  const handleSearch = event => setSearchTerm(event.target.value);
+  const handleSearchInput = event => setSearchTerm(event.target.value);
   const handleSearchSubmit = () => setUrl(`${API_ENDPOINT}${searchTerm}`);
   const handleRemoveStory = item => dispatchStories({ type: 'REMOVE_STORY', payload: item });
 
   return (
     <>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel id='search' value={searchTerm} onInputChange={handleSearch} isFocused={true}>
-        <strong>Search:</strong>
-      </InputWithLabel>
-      &nbsp;
-      <button type='button' disabled={!searchTerm} onClick={handleSearchSubmit}>Submit</button>
+      <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSumbit={handleSearchSubmit} />
       <hr />
       {stories.isError && <p>Something went wrong.</p>}
       {stories.isLoading ?
@@ -92,6 +88,17 @@ const App = () => {
     </>
   );
 }
+
+const SearchForm = ({ searchTerm, onSearchInput, onSearchSumbit }) =>
+  <>
+    <form onSubmit={onSearchSumbit}>
+      <InputWithLabel id='search' value={searchTerm} onInputChange={onSearchInput} isFocused={true}>
+        <strong>Search:</strong>
+      </InputWithLabel>
+      &nbsp;
+      <button type='submit' disabled={!searchTerm}>Submit</button>
+    </form>
+  </>
 
 const InputWithLabel = ({ id, value, type = 'text', onInputChange, isFocused, children }) => {
   const inputRef = React.useRef()
