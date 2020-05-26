@@ -1,32 +1,7 @@
 import React from 'react';
 import './App.css';
 
-const initialStories = [
-  {
-    title: 'React',
-    url: 'https://reactjs.org/',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Redux',
-    url: 'https://redux.js.org/',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
-const getAsyncStories = () =>
-  new Promise(resolve =>
-    setTimeout(() =>
-      resolve({ data: { stories: initialStories } }),
-      1000
-    )
-  );
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(
@@ -42,19 +17,19 @@ const useSemiPersistentState = (key, initialState) => {
 
 const storiesReducer = (state, action) => {
   switch (action.type) {
-    case 'STORIES_FETCH_INIT':
+    case 'FETCH_INIT':
       return {
         ...state,
         isLoading: true,
         isError: false
       };
-    case 'STORIES_FETCH_FAILURE':
+    case 'FETCH_FAILURE':
       return {
         ...state,
         isLoading: false,
         isError: true
       };
-    case 'SET_STORIES':
+    case 'FETCH_SUCCESS':
       return {
         ...state,
         data: action.payload,
@@ -74,20 +49,21 @@ const storiesReducer = (state, action) => {
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
 
-  const [stories, dispathStories] = React.useReducer(
+  const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
     { data: [], isLoading: false, isError: false }
   );
 
   React.useEffect(() => {
-    dispathStories({ type: 'STORIES_FETCH_INIT' })
-    getAsyncStories()
-      .then(result => dispathStories({ type: 'SET_STORIES', payload: result.data.stories }))
-      .catch(() => dispathStories({ type: 'STORIES_FETCH_FAILURE' }));
+    dispatchStories({ type: 'FETCH_INIT' });
+    fetch(`${API_ENDPOINT}react`)
+      .then(response => response.json())
+      .then(response => dispatchStories({ type: 'FETCH_SUCCESS', payload: response.hits }))
+      .catch(() => dispatchStories({ type: 'FETCH_FAILURE' }));
   }, []);
 
   const handleSearch = event => setSearchTerm(event.target.value);
-  const handleRemoveStory = item => dispathStories({ type: 'REMOVE_STORY', payload: item })
+  const handleRemoveStory = item => dispatchStories({ type: 'REMOVE_STORY', payload: item })
 
   const searchedStories = stories.data.filter(story => story.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
