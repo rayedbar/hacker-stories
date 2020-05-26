@@ -40,10 +40,21 @@ const useSemiPersistentState = (key, initialState) => {
   return [value, setValue];
 }
 
+const storiesReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_STORIES':
+      return action.payload;
+    case 'REMOVE_STORY':
+      return state.filter(story => story.objectID !== action.payload.objectID);
+    default:
+      throw new Error();
+  }
+}
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React');
 
-  const [stories, setStories] = React.useState([]);
+  const [stories, dispathStories] = React.useReducer(storiesReducer, []);
   const [isLoading, setIsLoading] = React.useState(false)
   const [isError, setIsError] = React.useState(false)
 
@@ -51,23 +62,21 @@ const App = () => {
     setIsLoading(true);
     getAsyncStories()
       .then(result => {
-        setStories(result.data.stories);
+        dispathStories({ type: 'SET_STORIES', payload: result.data.stories });
         setIsLoading(false);
       })
       .catch(() => setIsError(true));
   }, []);
 
   const handleSearch = event => setSearchTerm(event.target.value);
-  const handleRemoveStory = item => setStories(stories.filter(story => story.objectID !== item.objectID));
+  const handleRemoveStory = item => dispathStories({ type: 'REMOVE_STORY', payload: item })
 
   const searchedStories = stories.filter(story => story.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel id='search' value={searchTerm} onInputChange={handleSearch}
-        isFocused
-      >
+      <InputWithLabel id='search' value={searchTerm} onInputChange={handleSearch} isFocused={true}>
         <strong>Search:</strong>
       </InputWithLabel>
       <hr />
