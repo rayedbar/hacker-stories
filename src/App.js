@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import './App.css';
+import styles from './App.module.css';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -75,8 +75,8 @@ const App = () => {
   const handleRemoveStory = item => dispatchStories({ type: 'REMOVE_STORY', payload: item });
 
   return (
-    <div className='container'>
-      <h1 className='headline-primary'>My Hacker Stories</h1>
+    <div className={styles.container}>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
       <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSumbit={handleSearchSubmit} />
       {stories.isError && <p>Something went wrong.</p>}
       {stories.isLoading ?
@@ -90,12 +90,12 @@ const App = () => {
 
 const SearchForm = ({ searchTerm, onSearchInput, onSearchSumbit }) =>
   <>
-    <form onSubmit={onSearchSumbit} className='search-form'>
+    <form onSubmit={onSearchSumbit} className={styles.searchForm}>
       <InputWithLabel id='search' value={searchTerm} onInputChange={onSearchInput} isFocused={true}>
         <strong>Search:</strong>
       </InputWithLabel>
       &nbsp;
-      <button type='submit' disabled={!searchTerm} className='button button-large'>Submit</button>
+      <button type='submit' disabled={!searchTerm} className={`${styles.button} ${styles.buttonLarge}`}>Submit</button>
     </form>
   </>
 
@@ -110,9 +110,9 @@ const InputWithLabel = ({ id, value, type = 'text', onInputChange, isFocused, ch
 
   return (
     <>
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id} className={styles.label}>{children}</label>
       &nbsp;
-      <input ref={inputRef} id={id} type={type} value={value} onChange={onInputChange} />
+      <input ref={inputRef} id={id} type={type} value={value} onChange={onInputChange} className={styles.input} />
     </>
   )
 }
@@ -122,9 +122,8 @@ const List = ({ stories, onRemoveItem }) =>
     <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
   );
 
-
 const Item = ({ item, onRemoveItem }) =>
-  <div className='item'>
+  <div className={styles.item}>
     <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>&nbsp;
@@ -133,7 +132,7 @@ const Item = ({ item, onRemoveItem }) =>
     <span style={{ width: '10%' }}>{item.points}</span>&nbsp;
     <span style={{ width: '10%' }}>
       <button
-        className='button button_small'
+        className={`${styles.button} ${styles.buttonSmall}`}
         type='button'
         onClick={() => onRemoveItem(item)}
       >
