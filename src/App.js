@@ -75,28 +75,27 @@ const App = () => {
   const handleRemoveStory = item => dispatchStories({ type: 'REMOVE_STORY', payload: item });
 
   return (
-    <>
-      <h1>My Hacker Stories</h1>
+    <div className='container'>
+      <h1 className='headline-primary'>My Hacker Stories</h1>
       <SearchForm searchTerm={searchTerm} onSearchInput={handleSearchInput} onSearchSumbit={handleSearchSubmit} />
-      <hr />
       {stories.isError && <p>Something went wrong.</p>}
       {stories.isLoading ?
         <p>Loading ...</p>
         :
         <List stories={stories.data} onRemoveItem={handleRemoveStory} />
       }
-    </>
+    </div>
   );
 }
 
 const SearchForm = ({ searchTerm, onSearchInput, onSearchSumbit }) =>
   <>
-    <form onSubmit={onSearchSumbit}>
+    <form onSubmit={onSearchSumbit} className='search-form'>
       <InputWithLabel id='search' value={searchTerm} onInputChange={onSearchInput} isFocused={true}>
         <strong>Search:</strong>
       </InputWithLabel>
       &nbsp;
-      <button type='submit' disabled={!searchTerm}>Submit</button>
+      <button type='submit' disabled={!searchTerm} className='button button-large'>Submit</button>
     </form>
   </>
 
@@ -119,23 +118,28 @@ const InputWithLabel = ({ id, value, type = 'text', onInputChange, isFocused, ch
 }
 
 const List = ({ stories, onRemoveItem }) =>
-  <ul>
-    {stories.map(item =>
-      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-    )}
-  </ul>
+  stories.map(item =>
+    <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
+  );
+
 
 const Item = ({ item, onRemoveItem }) =>
-  <li>
-    <span>
+  <div className='item'>
+    <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>&nbsp;
-    <span>{item.author}</span>&nbsp;
-    <span>{item.num_comments}</span>&nbsp;
-    <span>{item.points}</span>&nbsp;
-    <span>
-      <button type='button' onClick={() => onRemoveItem(item)}>Dismiss</button>
+    <span style={{ width: '30%' }}>{item.author}</span>&nbsp;
+    <span style={{ width: '10%' }}>{item.num_comments}</span>&nbsp;
+    <span style={{ width: '10%' }}>{item.points}</span>&nbsp;
+    <span style={{ width: '10%' }}>
+      <button
+        className='button button_small'
+        type='button'
+        onClick={() => onRemoveItem(item)}
+      >
+        Dismiss
+      </button>
     </span>
-  </li>
+  </div>
 
 export default App;
