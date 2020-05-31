@@ -8,10 +8,7 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query='
 const useSemiPersistentState = (
   key: string,
   initialState: string
-): [
-    string,
-    (value: string) => void
-  ] => {
+): [string, (value: string) => void] => {
   const isMounted = React.useRef(false)
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
@@ -30,21 +27,21 @@ const useSemiPersistentState = (
 }
 
 type Story = {
-  objectID: string,
-  url: string,
-  title: string,
-  author: string,
-  numComments: number,
-  points: number
-}
+  objectID: string;
+  url: string;
+  title: string;
+  author: string;
+  numComments: number;
+  points: number;
+};
 
 type Stories = Array<Story>;
 
 type StoriesState = {
-  data: Stories,
-  isLoading: boolean,
-  isError: boolean
-}
+  data: Stories;
+  isLoading: boolean;
+  isError: boolean;
+};
 
 interface StoriesFetchInitAction {
   type: 'STORIES_FETCH_INIT';
@@ -52,7 +49,7 @@ interface StoriesFetchInitAction {
 
 interface StoriesFetchSuccessAction {
   type: 'STORIES_FETCH_SUCCESS';
-  payload: Stories
+  payload: Stories;
 }
 
 interface StoriesFetchFailureAction {
@@ -61,14 +58,14 @@ interface StoriesFetchFailureAction {
 
 interface StoriesRemoveAction {
   type: 'REMOVE_STORY';
-  payload: Story
+  payload: Story;
 }
 
 type StoriesAction =
-  StoriesFetchInitAction
+  | StoriesFetchInitAction
   | StoriesFetchSuccessAction
   | StoriesFetchFailureAction
-  | StoriesRemoveAction
+  | StoriesRemoveAction;
 
 const storiesReducer = (state: StoriesState, action: StoriesAction) => {
   switch (action.type) {
@@ -95,7 +92,7 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
       return {
         ...state,
         data: state.data.filter(
-          story => story.objectID !== action.payload.objectID
+          (story) => story.objectID !== action.payload.objectID
         )
       }
     default:
@@ -103,25 +100,26 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
   }
 }
 
-const getSumComments = (stories: Stories) => stories.reduce(
-  (result, story) => result + story.numComments, 0
-)
+const getSumComments = (stories: Stories) =>
+  stories.reduce((result, story) => result + story.numComments, 0)
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useSemiPersistentState('search', 'React')
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`)
 
-  const [stories, dispatchStories] = React.useReducer(
-    storiesReducer,
-    { data: [], isLoading: false, isError: false }
-  )
+  const [stories, dispatchStories] = React.useReducer(storiesReducer, {
+    data: [],
+    isLoading: false,
+    isError: false
+  })
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' })
     try {
       const result = await axios.get(url)
       dispatchStories({
-        type: 'STORIES_FETCH_SUCCESS', payload: result.data.hits
+        type: 'STORIES_FETCH_SUCCESS',
+        payload: result.data.hits
       })
     } catch {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
@@ -141,13 +139,13 @@ const App = () => {
   }
 
   const handleRemoveStory = React.useCallback(
-    item => dispatchStories({ type: 'REMOVE_STORY', payload: item }),
+    (item) => dispatchStories({ type: 'REMOVE_STORY', payload: item }),
     []
   )
 
-  const sumComments = React.useMemo(() =>
-    getSumComments(stories.data), [stories]
-  )
+  const sumComments = React.useMemo(() => getSumComments(stories.data), [
+    stories
+  ])
 
   return (
     <div className={styles.container}>
@@ -157,49 +155,59 @@ const App = () => {
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
-        onSearchSubmit={handleSearchSubmit} />
+        onSearchSubmit={handleSearchSubmit}
+      />
       {stories.isError && <p>Something went wrong.</p>}
-      {stories.isLoading
-        ? <p>Loading ...</p>
-        : <List list={stories.data} onRemoveItem={handleRemoveStory} />
-      }
+      {stories.isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      )}
     </div>
   )
 }
 
 type SearchFormProps = {
-  searchTerm: string,
-  onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  onSearchSubmit: (event: React.ChangeEvent<HTMLFormElement>) => void,
-}
+  searchTerm: string;
+  onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearchSubmit: (event: React.ChangeEvent<HTMLFormElement>) => void;
+};
 
 const SearchForm = ({
   searchTerm,
   onSearchInput,
   onSearchSubmit
-}: SearchFormProps) =>
+}: SearchFormProps) => (
   <>
     <form onSubmit={onSearchSubmit} className={styles.searchForm}>
-      <InputWithLabel id='search' value={searchTerm}
-        onInputChange={onSearchInput} isFocused={true}>
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
+        onInputChange={onSearchInput}
+        isFocused={true}
+      >
         <strong>Search:</strong>
       </InputWithLabel>
       &nbsp;
-      <button type='submit' disabled={!searchTerm}
-        className={`${styles.button} ${styles.buttonLarge}`}>
+      <button
+        type="submit"
+        disabled={!searchTerm}
+        className={`${styles.button} ${styles.buttonLarge}`}
+      >
         Submit
       </button>
     </form>
   </>
+)
 
 type InputWithLabelProps = {
-  id: string,
-  value: string,
-  type?: string,
-  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  isFocused?: boolean,
-  children: React.ReactNode
-}
+  id: string;
+  value: string;
+  type?: string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isFocused?: boolean;
+  children: React.ReactNode;
+};
 
 const InputWithLabel = ({
   id,
@@ -219,48 +227,61 @@ const InputWithLabel = ({
 
   return (
     <>
-      <label htmlFor={id} className={styles.label}>{children}</label>
+      <label htmlFor={id} className={styles.label}>
+        {children}
+      </label>
       &nbsp;
-      <input ref={inputRef} id={id} type={type} value={value}
-        onChange={onInputChange} className={styles.input} />
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+        className={styles.input}
+      />
     </>
   )
 }
 
 type ListProps = {
-  list: Stories,
-  onRemoveItem: (item: Story) => void
-}
+  list: Stories;
+  onRemoveItem: (item: Story) => void;
+};
 
-const List = ({ list, onRemoveItem }: ListProps) =>
+const List = ({ list, onRemoveItem }: ListProps) => (
   <>
-    {list.map(item =>
+    {list.map((item) => (
       <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-    )}
+    ))}
   </>
+)
 
 type ItemProps = {
-  item: Story,
-  onRemoveItem: (item: Story) => void
-}
+  item: Story;
+  onRemoveItem: (item: Story) => void;
+};
 
-const Item = ({ item, onRemoveItem }: ItemProps) =>
+const Item = ({ item, onRemoveItem }: ItemProps) => (
   <div className={styles.item}>
     <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
-    </span>&nbsp;
+    </span>
+    &nbsp;
     <span style={{ width: '30%' }}>{item.author}</span>&nbsp;
     <span style={{ width: '10%' }}>{item.numComments}</span>&nbsp;
     <span style={{ width: '10%' }}>{item.points}</span>&nbsp;
     <span style={{ width: '10%' }}>
       <button
         className={`${styles.button} ${styles.buttonSmall}`}
-        type='button'
+        type="button"
         onClick={() => onRemoveItem(item)}
       >
-        <Check height='18px' width='18px' />
+        <Check height="18px" width="18px" />
       </button>
     </span>
   </div>
+)
 
 export default App
+
+export { SearchForm, InputWithLabel, List, Item }
